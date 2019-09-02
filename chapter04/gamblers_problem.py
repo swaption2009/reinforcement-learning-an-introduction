@@ -25,6 +25,7 @@ HEAD_PROB = 0.4
 def figure_4_3():
     # state value
     state_value = np.zeros(GOAL + 1)
+    print(f'original state_value: {state_value}')
     state_value[GOAL] = 1.0
 
     sweeps_history = []
@@ -41,12 +42,16 @@ def figure_4_3():
             for action in actions:
                 action_returns.append(
                     HEAD_PROB * state_value[state + action] + (1 - HEAD_PROB) * state_value[state - action])
+                print(f'checking state: {state} and action:{action}')
             new_value = np.max(action_returns)
             state_value[state] = new_value
+            print(f'max state new_value: {state_value[state]}')
         delta = abs(state_value - old_state_value).max()
+        print(f'delta: {delta}')
         if delta < 1e-9:
             sweeps_history.append(state_value)
             break
+        print(f'sweeps_history at the end of VI: {sweeps_history}')
 
     # compute the optimal policy
     policy = np.zeros(GOAL + 1)
@@ -60,23 +65,25 @@ def figure_4_3():
         # round to resemble the figure in the book, see
         # https://github.com/ShangtongZhang/reinforcement-learning-an-introduction/issues/83
         policy[state] = actions[np.argmax(np.round(action_returns[1:], 5)) + 1]
+        print(f'at state: {state}, the policy is {policy[state]}')
+    print(f'final policy: {policy}')
 
-    plt.figure(figsize=(10, 20))
+    # plt.figure(figsize=(10, 20))
 
-    plt.subplot(2, 1, 1)
-    for sweep, state_value in enumerate(sweeps_history):
-        plt.plot(state_value, label='sweep {}'.format(sweep))
-    plt.xlabel('Capital')
-    plt.ylabel('Value estimates')
-    plt.legend(loc='best')
+    # plt.subplot(2, 1, 1)
+    # for sweep, state_value in enumerate(sweeps_history):
+    #     plt.plot(state_value, label='sweep {}'.format(sweep))
+    # plt.xlabel('Capital')
+    # plt.ylabel('Value estimates')
+    # plt.legend(loc='best')
 
-    plt.subplot(2, 1, 2)
-    plt.scatter(STATES, policy)
-    plt.xlabel('Capital')
-    plt.ylabel('Final policy (stake)')
+    # plt.subplot(2, 1, 2)
+    # plt.scatter(STATES, policy)
+    # plt.xlabel('Capital')
+    # plt.ylabel('Final policy (stake)')
 
-    plt.savefig('../images/figure_4_3.png')
-    plt.close()
+    # plt.savefig('../images/figure_4_3.png')
+    # plt.close()
 
 
 if __name__ == '__main__':
